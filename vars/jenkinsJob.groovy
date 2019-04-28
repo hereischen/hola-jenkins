@@ -22,6 +22,7 @@ def addProperties(){
         parameters([
             string(name: 'example_param1', defaultValue: 'hello word'),
             string(name: 'example_param2', defaultValue: ''),
+            string(name: 'example_param3', defaultValue: '')
         ]),
         pipelineTriggers([
             upstream(upstreamProjects: 'upstream', threshold:
@@ -31,20 +32,18 @@ def addProperties(){
 }
 
 def addCIBuildTrigger(){
-        properties([
-            pipelineTriggers(
-                [[$class: 'CIBuildTrigger',
-                  noSquash: true,
-                  providerData: [
-                      $class: 'ActiveMQSubscriberProviderData',
-                      name: 'Red Hat UMB',
-                      selector: "method = 'build' AND new = 'CLOSED'",
-                      overrides: [
-                          topic: ''
-                      ]
-                  ]
-                ]]
-        ),
+    properties([
+        pipelineTriggers([
+            [$class: 'CIBuildTrigger',
+                noSquash: true,
+                providerData: [
+                    $class: 'ActiveMQSubscriberProviderData',
+                    name: 'Red Hat UMB',
+                    selector: "method = 'build' AND new = 'CLOSED'",
+ 
+                ]  
+            ]
+        ]), 
     ])
 }
 
@@ -52,6 +51,7 @@ def packageArtifact(){
     stage("Package artifact") {
         sh "echo this is it"
         println("properties:${params.example_param1}")
+        println("test")
     }
 }
 

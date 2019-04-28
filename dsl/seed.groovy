@@ -43,9 +43,7 @@ def buildPipelineJobs() {
     createDeploymentJob(deployName, repoUrl)
     createDeploymentJob(upstream, repoUrl)
     // createTestJob(testName, repoUrl)
-    if (!jenkins.model.Jenkins.instance.getItemByFullName(deployName)) {
     queue(deployName)
-    }
     if (!jenkins.model.Jenkins.instance.getItemByFullName(upstream)) {
     queue(upstream)
     }
