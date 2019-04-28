@@ -1,6 +1,8 @@
 def call(){
     if(env.JOB_NAME.contains("deploy")){
-        properties()
+        addProperties()
+    } else if (env.JOB_NAME.contains("upstream")) {
+        addCIBuildTrigger()
     }
     node {
         stage('Checkout') {
@@ -15,12 +17,11 @@ def call(){
     }
 }
 
-def properties(){
+def addProperties(){
     properties([
         parameters([
-            string(name: 'submodule', defaultValue: 'hello word'),
-            string(name: 'submodule_branch', defaultValue: ''),
-            string(name: 'commit_sha', defaultValue: ''),
+            string(name: 'example_param1', defaultValue: 'hello word'),
+            string(name: 'example_param2', defaultValue: ''),
         ]),
         pipelineTriggers([
             upstream(upstreamProjects: 'upstream', threshold:
@@ -29,10 +30,28 @@ def properties(){
     ])
 }
 
+def addCIBuildTrigger(){
+        properties([
+            pipelineTriggers(
+                [[$class: 'CIBuildTrigger',
+                  noSquash: true,
+                  providerData: [
+                      $class: 'ActiveMQSubscriberProviderData',
+                      name: 'Red Hat UMB',
+                      selector: "method = 'build' AND new = 'CLOSED'",
+                      overrides: [
+                          topic: ''
+                      ]
+                  ]
+                ]]
+        ),
+    ])
+}
+
 def packageArtifact(){
     stage("Package artifact") {
         sh "echo this is it"
-        println("properties:${params.submodule}")
+        println("properties:${params.example_param1}")
     }
 }
 

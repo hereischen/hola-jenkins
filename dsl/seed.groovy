@@ -13,7 +13,7 @@ def createDeploymentJob(jobName, repoUrl) {
                         }
                     }
                 }
-                scriptPath("jobs/trigger1")
+                scriptPath("jobs/deploy.groovy")
             }
         }
     }
