@@ -1,8 +1,21 @@
 #!/usr/bin/env groovy
+import groovy.io.FileType
 
-def buildPipelineJobs(){
-    String jobName = "composeTrigger"
+String jobDir = "${WORKSPACE}/vars/jobs"
+
+
+def retrieveJobs (String jobDir) {
+    def list = []
+    def dir = new File(jobDir)
+    dir.eachFileRecurse (FileType.FILES) { file ->
+        list << file.getName()
+    }
+    return list
+}
+
+def buildPipelineJobs(String jobName){
     String repoUrl = "https://github.com/hereischen/hola-jenkins.git"
+    println "Seeding job ${jobName}."
     pipelineJob(jobName) {
         definition {
             cpsScm {
@@ -17,16 +30,15 @@ def buildPipelineJobs(){
                         }
                     }
                 }
-                scriptPath("vars/jobs/${jobName}.groovy")
+                scriptPath("vars/jobs/${jobName}")
             }
-        }
-        // trigger jobs when the code base changes. 
-        triggers {
-            gitlabPush()
         }
         // build jobs to make their properties effective
         queue(jobName)
     }
 }
 
-buildPipelineJobs()
+def jobList = retrieveJobs (jobDir)
+jobList.each {
+    buildPipelineJobs(it)
+}

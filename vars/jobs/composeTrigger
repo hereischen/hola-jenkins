@@ -6,7 +6,7 @@
 properties([
     parameters([
         string(name: 'example_param1', defaultValue: 'hello word')
-    ]), 
+    ]),
 ])
 
 node {
